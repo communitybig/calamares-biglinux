@@ -1,9 +1,9 @@
-# Maintainer: Tales A. Mendonça <talesam@gmail.com>
+# Maintainer: Vilmar Catafesta <vcatafesta@gmail.com>
 
-pkgname=pkgbuild-template
-pkgdesc="Package template for Communitybig"
+pkgname=calamares-biglinux
+pkgdesc="Calamares tweaks to BigLinux, like using btrfs+zstd for default"
 # Uncomment and edit the following lines as needed
-#depends=('')
+depends=('bbv-framework' 'bigcontrolcenter-base')
 #makedepends=('')
 #optdepends=('')
 #conflicts=('')
@@ -69,4 +69,9 @@ package() {
     if [ -f "README.md" ]; then
         install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
     fi
+}
+
+pre_remove() {
+  mv -f /usr/bin/calamares /usr/bin/calamares-biglinux
+  mv -f /usr/bin/calamares-manjaro /usr/bin/calamares
 }
