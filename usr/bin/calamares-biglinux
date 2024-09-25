@@ -6,7 +6,7 @@
 #  Description: Big Store installing programs for BigLinux
 #
 #  Created: 2020/01/11
-#  Altered: 2024/08/23
+#  Altered: qua 25 set 2024 15:50:37 -04
 #
 #  Copyright (c) 2023-2024, Vilmar Catafesta <vcatafesta@gmail.com>
 #  All rights reserved.
@@ -32,11 +32,32 @@
 #  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 APP="${0##*/}"
-_VERSION_="1.0.0-20240823"
+_VERSION_="1.0.1-20240925"
 #
 LIBRARY=${LIBRARY:-'/usr/share/bigbashview/bcc/shell'}
 [[ -f "${LIBRARY}/bcclib.sh" ]] && source "${LIBRARY}/bcclib.sh"
 [[ -f "${LIBRARY}/tinilib.sh" ]] && source "${LIBRARY}/tinilib.sh"
+
+function get_path_iso_name() {
+  # Lista de possíveis distribuições
+  local distributions=("manjaro" "biglinux" "chililinux" "bigcommunity")
+
+  # Variável para armazenar o caminho correto
+  local path_iso=""
+  local distro
+  local potential_path
+
+  # Itera sobre cada distribuição e testa se o caminho existe
+  for distro in "${distributions[@]}"; do
+    potential_path="/run/miso/bootmnt/$distro/x86_64/"
+    if [ -d "$potential_path" ]; then
+      path_iso="$potential_path"
+      break
+    fi
+  done
+  path_iso="$potential_path"
+  echo "$path_iso"
+}
 
 function sh_calamares_biglinux_config() {
 	#Translation
@@ -45,8 +66,8 @@ function sh_calamares_biglinux_config() {
 	export TEXTDOMAIN=calamares-biglinux
 	#
 	declare -g public_verify_local=0
-	declare -g local_path_iso='/run/miso/bootmnt/manjaro/x86_64/'
-	declare -g path_iso='/run/miso/bootmnt/manjaro/x86_64/'
+	declare -g path_iso="$(get_path_iso_name)"
+	declare -g local_path_iso="$path_iso"
 	declare -g ctesteLocal=$'Teste local foi finalizado com sucesso!'
 	declare -g Information=$"Informação"
 	declare -g Message=$'Verificando o arquivo:'
