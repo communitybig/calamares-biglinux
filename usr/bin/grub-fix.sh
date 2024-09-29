@@ -39,10 +39,17 @@ LIBRARY=${LIBRARY:-'/usr/share/bigbashview/bcc/shell'}
 [[ -f "${LIBRARY}/tinilib.sh" ]] && source "${LIBRARY}/tinilib.sh"
 
 function sh_grub-fix_sh_main() {
+  misobasedir=$(grep -oP 'misobasedir=\K\S+' /run/miso/bootmnt/boot/grub/kernels.cfg | head -n 1)
+  misolabel=$(grep -oP 'misolabel=\K\S+' /run/miso/bootmnt/boot/grub/kernels.cfg | head -n 1)
+
+  [[ -z "$misobasedir" ]] && misobasedir='manjaro'
+  [[ -z "$misolabel"   ]] && misolabel='BIGLINUXLIVE'
+  theme="$misobasedir"
+
 	#sed -i "s|GRUB_CMDLINE_LINUX_DEFAULT=\"|GRUB_CMDLINE_LINUX_DEFAULT=\"$(cat /proc/cmdline | sed 's|.*misolabel=[[:alnum:]_-]*||g;s|bootsplash.bootfile=[[:alnum:]/_-]*||g;s|quiet systemd.show_status=1||g;s|driver=nonfree||g;s|driver=free||g;s|nouveau.modeset=0 i915.modeset=1 radeon.modeset=1||g;s|nouveau.modeset=1 i915.modeset=1 radeon.modeset=1||g')|g" $*
 	sed -i "s|GRUB_CMDLINE_LINUX_DEFAULT='|GRUB_CMDLINE_LINUX_DEFAULT='$(sed 's|BOOT_IMAGE=/boot/vmlinuz-x86_64 ||g;s| driver=nonfree||g;s| driver=free||g;s| rdinit=/vtoy/vtoy||g;s| quiet splash||g' /proc/cmdline) |g" $*
-	sed -i 's|BOOT_IMAGE=/boot/vmlinuz-x86_64||g;s|misobasedir=bigcommunity misolabel=COMUNNITY_LIVE ||g' $*
-	sed -i 's|GRUB_THEME=.*|GRUB_THEME="/boot/grub/themes/community/theme.txt"|g' $*
+	sed -i "s|BOOT_IMAGE=/boot/vmlinuz-x86_64||g;s|misobasedir=$misobasedir misolabel=$misolabel ||g" $*
+	sed -i "s|GRUB_THEME=.*|GRUB_THEME=\"/boot/grub/themes/$misobasedir/theme.txt\"|g" $*
 	sed -i 's|GRUB_SAVEDEFAULT=true|GRUB_SAVEDEFAULT=false|g;s|quiet quiet|quiet|g' $*
 
 	if ! grep -q GRUB_EARLY_INITRD_LINUX_STOCK $*; then
