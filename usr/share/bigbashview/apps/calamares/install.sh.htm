@@ -55,23 +55,21 @@ if [ "$option" = "ext4" ]; then
     > /tmp/start_calamares
 fi
 
-if [ "$use_custom_desktop" = "yes" ]; then
-echo '---
-unpack:
-    - source: "$path_iso/rootfs.sfs"
-      sourcefs: "squashfs"
-      destination: ""' > /etc/calamares/modules/unpackfs.conf
-
+if [[ "$use_custom_desktop" = "yes" ]]; then
+  echo "---
+  unpack:
+      - source: \"$path_iso/rootfs.sfs\"
+        sourcefs: \"squashfs\"
+        destination: \"\"" > /etc/calamares/modules/unpackfs.conf
 else
-
-echo '---
-unpack:
-    - source: "$path_iso/rootfs.sfs"
-      sourcefs: "squashfs"
-      destination: ""
-    - source: "$path_iso/desktopfs.sfs"
-      sourcefs: "squashfs"
-      destination: ""' > /etc/calamares/modules/unpackfs.conf
+  echo "---
+  unpack:
+      - source: \"$path_iso/rootfs.sfs\"
+        sourcefs: \"squashfs\"
+        destination: \"\"
+      - source: \"$path_iso/desktopfs.sfs\"
+        sourcefs: \"squashfs\"
+        destination: \"\"" > /etc/calamares/modules/unpackfs.conf
 fi
 
 if [ -e "/etc/calamares/modules/packages.conf" ];then
