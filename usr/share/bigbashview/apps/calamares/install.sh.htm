@@ -4,6 +4,38 @@
 export TEXTDOMAINDIR="/usr/share/locale"
 export TEXTDOMAIN=calamares-biglinux
 
+detect_distro_path() {
+  # Define o diretório base onde as distribuições são montadas
+  local base_dir="/run/miso/bootmnt"
+  local distro_dir
+  local distro
+
+  # Tenta encontrar o diretório da distribuição dentro do diretório base
+  for distro_dir in "$base_dir"/*/x86_64/; do
+    # Verifica se o caminho é um diretório e segue o padrão esperado
+    if [ -d "$distro_dir" ]; then
+      # Extrai o nome da distribuição a partir do caminho
+      distro=$(basename $(dirname "$distro_dir"))
+
+      # Verifica se o nome da distribuição é válido
+      if [[ "$distro" != "x86_64" ]]; then
+        # Retorna o caminho completo encontrado
+        echo "$distro_dir"
+        break
+      fi
+    fi
+  done
+
+  # Caso não encontre nenhum diretório válido, retorna o default e foda-se
+  if [ -z "$distro" ]; then
+    echo '/run/miso/bootmnt/manjaro/x86_64/'
+  fi
+}
+export -f detect_distro_path
+
+declare -g path_iso="$(detect_distro_path)"
+declare -g local_path_iso="$path_iso"
+
 touch /tmp/biglinux-wait-install
 OIFS=$IFS
 IFS=$'\n'
@@ -26,7 +58,7 @@ fi
 if [ "$use_custom_desktop" = "yes" ]; then
 echo '---
 unpack:
-    - source: "/run/miso/bootmnt/manjaro/x86_64/rootfs.sfs"
+    - source: "$path_iso/rootfs.sfs"
       sourcefs: "squashfs"
       destination: ""' > /etc/calamares/modules/unpackfs.conf
 
@@ -34,10 +66,10 @@ else
 
 echo '---
 unpack:
-    - source: "/run/miso/bootmnt/manjaro/x86_64/rootfs.sfs"
+    - source: "$path_iso/rootfs.sfs"
       sourcefs: "squashfs"
       destination: ""
-    - source: "/run/miso/bootmnt/manjaro/x86_64/desktopfs.sfs"
+    - source: "$path_iso/desktopfs.sfs"
       sourcefs: "squashfs"
       destination: ""' > /etc/calamares/modules/unpackfs.conf
 fi
