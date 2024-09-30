@@ -74,7 +74,7 @@ jobs:
           github_token: ${{ secrets.REPOSITORY_TOKEN }}
           branch: ${{ github.ref }}
 
-      - name: Send Hooks CommunityBig Build Package
+      - name: Build Package on build-package
         shell: bash
         run: |
           repo_name=${{ github.repository }}
@@ -96,7 +96,7 @@ jobs:
             --data "$data" \
             -w "%{http_code}" \
             -o /dev/null \
-            "https://api.github.com/repos/communitybig/build-package/dispatches")
+            "https://api.github.com/repos/$owner/build-package/dispatches")
 
           echo "Response: $response"
           if [[ "$response" != "204" ]]; then
