@@ -66,7 +66,7 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add --all
-          if [ -n "$(git commit -m "translate $(date +%y-%m-%d_%H:%M)" -a | grep "nothing to commit")" ];then exit 0; fi
+          if [ -n "$(git commit -m "github-actions bot Translate $(date +%y-%m-%d_%H:%M)" -a | grep "nothing to commit")" ];then exit 0; fi
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -74,7 +74,7 @@ jobs:
           github_token: ${{ secrets.REPOSITORY_TOKEN }}
           branch: ${{ github.ref }}
 
-      - name: Send Hooks ChiliLinux Build Package
+      - name: Send Hooks CommunityBig Build Package
         shell: bash
         run: |
           repo_name=${{ github.repository }}
@@ -96,7 +96,7 @@ jobs:
             --data "$data" \
             -w "%{http_code}" \
             -o /dev/null \
-            "https://api.github.com/repos/chililinux/build-package/dispatches")
+            "https://api.github.com/repos/communitybig/build-package/dispatches")
 
           echo "Response: $response"
           if [[ "$response" != "204" ]]; then
